@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Card, CardContent, TextField, makeStyles, useMediaQuery } from '@material-ui/core'
+import tet from './lib/tet'
 
 
 function App() {
@@ -36,13 +37,16 @@ const toneInputContainerStyle = makeStyles({
 function ToneInputContainer() {
   const minWidth = useMediaQuery('(min-width:720px)')
   const classes = toneInputContainerStyle(minWidth);
-  const [toneData, toneDataUpdater] = React.useState({
-    type: 'midi',
-    data: '69'
-  });
+  const data = window.localStorage.lastData ?
+    window.localStorage.lastData : {
+      MIDI: 69,
+      Hertz: 440.0,
+      Pitch: 'A4'
+    }
+  const [toneData, toneDataUpdater] = React.useState(data);
   return(
     <main className={classes.toneInputContainer}>
-      <ToneInput dataType="MIDI" toneData={toneData} toneDataUpdater={toneDataUpdater}/>
+      <ToneInput dataType="MIDI"  toneData={toneData} toneDataUpdater={toneDataUpdater}/>
       <ToneInput dataType="Hertz" toneData={toneData} toneDataUpdater={toneDataUpdater}/>
       <ToneInput dataType="Pitch" toneData={toneData} toneDataUpdater={toneDataUpdater}/>
     </main>
@@ -67,8 +71,53 @@ const toneInputStyle = makeStyles({
 });
 
 function ToneInput(props) {
+  // Styling
   const classes = toneInputStyle();
-  const [isDataValid, isDataValidSetter] = React.useState(false);
+
+  // Get the initial correct data.
+  let selfData = props.toneData[props.dataType];
+
+  // Whether our own data is valid or not is a state.
+  const [isDataValid, isDataValidSetter] = React.useState(true);
+
+  // Generate function for textbox data update
+  function handleDataUpdate(e) {
+    e.preventDefault();
+    console.log(e);
+    let val = e.target.value;
+    // Gather essential information
+    // Any error being thrown would cause the validity to be false
+    let midi, hertz, pitch;
+    try {
+      if (props.dataType === 'MIDI') {
+        val = parseInt(val);
+        midi = val;
+        hertz = tet.midiToHertz(val);
+        pitch = tet.midiToPitch(val);
+      } else if (props.dataType === 'Hertz') {
+        val = parseFloat(val);
+        midi = tet.hertzToMidi(val);
+        hertz = val;
+        pitch = tet.hertzToPitch(val);
+      } else if (props.dataType === 'Pitch') {
+        midi = tet.pitchToMidi(val);
+        hertz = tet.pitchToHertz(val);
+        pitch = val;
+      }
+    } catch(err) {
+      console.error(err);
+      isDataValidSetter(false);
+      return true;
+    }
+    // Our data is valid
+    isDataValidSetter(true);
+    // Send the data to the upper component to trigger update
+    props.toneDataUpdater({
+      MIDI: midi,
+      Hertz: hertz,
+      Pitch: pitch
+    })
+  }
 
   return (
     <Card className={classes.card}>
@@ -77,10 +126,12 @@ function ToneInput(props) {
         <TextField
           className={classes.textField}
           label={"Input " + props.dataType}
-          variant="outlined"/>
-        {isDataValid ?
-          <></> :
-          <Typography variant='caption' color='error'>{`Error processing ${props.dataType} data.`}</Typography>}
+          value={selfData}
+          variant="outlined"
+          onChange={handleDataUpdate}/>
+          <Typography variant='caption' color='error' style={{visibility: isDataValid ? 'hidden' : 'visible'}}>
+            {`Error processing ${props.dataType} data.`}
+          </Typography>
       </CardContent>
     </Card>
   );
