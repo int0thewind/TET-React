@@ -9,6 +9,7 @@ const toneInputsStyle = makeStyles((theme) => ({
   toneInputContainer: {
     display: 'flex',
     height: '100%',
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: props => props.direction,
@@ -46,10 +47,12 @@ function ToneInputs() {
   let [isHertzValid, isHertzValidUpdater] = React.useState(true);
   let [isPitchValid, isPitchValidUpdater] = React.useState(true);
 
-  function setAllValid() {
+  function updateAllInfo(obj) {
     isMidiValidUpdater(true);
     isHertzValidUpdater(true);
     isPitchValidUpdater(true);
+    toneDataUpdater(obj);
+    window.localStorage.setItem(TONE_DATA_STORAGE, JSON.stringify(obj));
   }
 
   function handleMidiUpdate(e) {
@@ -64,9 +67,7 @@ function ToneInputs() {
       toneDataUpdater({ midi, hertz, pitch });
       return;
     }
-    setAllValid()
-    toneDataUpdater({ midi, hertz, pitch });
-    window.localStorage.setItem(TONE_DATA_STORAGE, JSON.stringify({ midi, hertz, pitch }));
+    updateAllInfo({ midi, hertz, pitch });
   }
 
   function handleHertzUpdate(e) {
@@ -81,9 +82,7 @@ function ToneInputs() {
       toneDataUpdater({ midi, hertz, pitch });
       return;
     }
-    setAllValid()
-    toneDataUpdater({ midi, hertz, pitch });
-    window.localStorage.setItem(TONE_DATA_STORAGE, JSON.stringify({ midi, hertz, pitch }));
+    updateAllInfo({ midi, hertz, pitch });
   }
 
   function handlePitchUpdate(e) {
@@ -98,13 +97,11 @@ function ToneInputs() {
       toneDataUpdater({ midi, hertz, pitch });
       return;
     }
-    setAllValid()
-    toneDataUpdater({ midi, hertz, pitch });
-    window.localStorage.setItem(TONE_DATA_STORAGE, JSON.stringify({ midi, hertz, pitch }));
+    updateAllInfo({ midi, hertz, pitch });
   }
   
   return(
-    <Container className={classes.toneInputContainer}>
+    <div className={classes.toneInputContainer}>
       <Card className={classes.card}>
         <CardContent className={classes.cardContent}>
           <Typography variant="h6" className={classes.cardTitle}>MIDI</Typography>
@@ -146,7 +143,7 @@ function ToneInputs() {
           </Typography>
         </CardContent>
       </Card>
-    </Container>
+    </div>
   )
 }
 
