@@ -1,140 +1,170 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Card, CardContent, TextField, makeStyles, useMediaQuery } from '@material-ui/core'
+import { AppBar, Toolbar, Typography,
+  Card, CardContent, TextField,
+  makeStyles, useMediaQuery,
+  ThemeProvider, createMuiTheme, Container
+} from '@material-ui/core'
 import tet from './lib/tet'
 
 
 function App() {
+  const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const autoTheme = createMuiTheme({
+    palette: {
+      type: darkMode ? 'dark' : 'light'
+    }
+  })
   return (
-    <>
-      <Bar/>
-      <ToneInputContainer/>
-    </>
+    <ThemeProvider theme={autoTheme}>
+      <AppBar position="sticky">
+        <Toolbar>
+          <Typography variant="h6">TET</Typography>
+        </Toolbar>
+      </AppBar>
+      <ToneInputs/>
+    </ThemeProvider>
   );
 }
 
-function Bar() {
-  return (
-    <AppBar position="sticky">
-      <Toolbar>
-        <Typography variant="h6">TET</Typography>
-      </Toolbar>
-    </AppBar>
-  )
-}
-
-const toneInputContainerStyle = makeStyles({
+const toneInputsStyle = makeStyles((theme) => ({
   toneInputContainer: {
     display: 'flex',
-    width: '100%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    // TODO: what is the right way of using functional styling?
-    flexDirection: minWidth => minWidth ? 'row': 'column'
-  }
-});
-
-function ToneInputContainer() {
-  const minWidth = useMediaQuery('(min-width:720px)')
-  const classes = toneInputContainerStyle(minWidth);
-  const data = window.localStorage.lastData ?
-    window.localStorage.lastData : {
-      MIDI: 69,
-      Hertz: 440.0,
-      Pitch: 'A4'
-    }
-  const [toneData, toneDataUpdater] = React.useState(data);
-  return(
-    <main className={classes.toneInputContainer}>
-      <ToneInput dataType="MIDI"  toneData={toneData} toneDataUpdater={toneDataUpdater}/>
-      <ToneInput dataType="Hertz" toneData={toneData} toneDataUpdater={toneDataUpdater}/>
-      <ToneInput dataType="Pitch" toneData={toneData} toneDataUpdater={toneDataUpdater}/>
-    </main>
-  )
-}
-
-const toneInputStyle = makeStyles({
-  cardContent: {
-    display: 'flex',
-    flexDirection: 'column',
+    flexDirection: props => props.direction,
+    backgroundColor: theme.palette.background.default
   },
   card: {
     margin: '4pt 4pt 4pt 4pt',
-    width: '226pt'
+    width: '226pt',
+    height: '120pt'
   },
   textField: {
     margin: '4pt 4pt 4pt 4pt'
   },
   cardTitle: {
     margin: '4pt 4pt 4pt 4pt'
+  },
+  cardContent: {
+    display: 'flex',
+    flexDirection: 'column'
   }
-});
+}));
 
-function ToneInput(props) {
-  // Styling
-  const classes = toneInputStyle();
+function ToneInputs() {
+  let minWidth = useMediaQuery('(min-width:720px)');
+  let classes = toneInputsStyle({
+    direction: minWidth ? 'row': 'column'
+  });
+  let [toneData, toneDataUpdater] = React.useState({
+    midi: 69,
+    hertz: 440.0,
+    pitch: 'A4'
+  });
+  let [isMidiValid,  isMidiValidUpdater ] = React.useState(true);
+  let [isHertzValid, isHertzValidUpdater] = React.useState(true);
+  let [isPitchValid, isPitchValidUpdater] = React.useState(true);
 
-  // Get the initial correct data.
-  let selfData = props.toneData[props.dataType];
+  function setAllValid() {
+    isMidiValidUpdater(true);
+    isHertzValidUpdater(true);
+    isPitchValidUpdater(true);
+  }
 
-  // Whether our own data is valid or not is a state.
-  const [isDataValid, isDataValidSetter] = React.useState(true);
-
-  // Generate function for textbox data update
-  function handleDataUpdate(e) {
-    e.preventDefault();
-    console.log(e);
-    let val = e.target.value;
-    // Gather essential information
-    // Any error being thrown would cause the validity to be false
-    let midi, hertz, pitch;
+  function handleMidiUpdate(e) {
+    let {midi, hertz, pitch} = toneData;
+    midi = parseInt(e.target.value);
     try {
-      if (props.dataType === 'MIDI') {
-        val = parseInt(val);
-        midi = val;
-        hertz = tet.midiToHertz(val);
-        pitch = tet.midiToPitch(val);
-      } else if (props.dataType === 'Hertz') {
-        val = parseFloat(val);
-        midi = tet.hertzToMidi(val);
-        hertz = val;
-        pitch = tet.hertzToPitch(val);
-      } else if (props.dataType === 'Pitch') {
-        midi = tet.pitchToMidi(val);
-        hertz = tet.pitchToHertz(val);
-        pitch = val;
-      }
-    } catch(err) {
-      console.error(err);
-      isDataValidSetter(false);
-      return true;
+      pitch = tet.midiToPitch(midi);
+      hertz = tet.midiToHertz(midi);
+    } catch (err) {
+      console.log(err);
+      isMidiValidUpdater(false);
+      toneDataUpdater({ midi, hertz, pitch });
+      return;
     }
-    // Our data is valid
-    isDataValidSetter(true);
-    // Send the data to the upper component to trigger update
-    props.toneDataUpdater({
-      MIDI: midi,
-      Hertz: hertz,
-      Pitch: pitch
-    })
+    setAllValid()
+    toneDataUpdater({ midi, hertz, pitch });
   }
 
-  return (
-    <Card className={classes.card}>
-      <CardContent className={classes.cardContent}>
-        <Typography variant="h6" className={classes.cardTitle}>{props.dataType}</Typography>
-        <TextField
-          className={classes.textField}
-          label={"Input " + props.dataType}
-          value={selfData}
-          variant="outlined"
-          onChange={handleDataUpdate}/>
-          <Typography variant='caption' color='error' style={{visibility: isDataValid ? 'hidden' : 'visible'}}>
-            {`Error processing ${props.dataType} data.`}
+  function handleHertzUpdate(e) {
+    let {midi, hertz, pitch} = toneData;
+    hertz = parseFloat(e.target.value);
+    try {
+      pitch = tet.hertzToPitch(hertz);
+      midi = tet.hertzToMidi(hertz);
+    } catch (err) {
+      console.log(err);
+      isHertzValidUpdater(false);
+      toneDataUpdater({ midi, hertz, pitch });
+      return;
+    }
+    setAllValid()
+    toneDataUpdater({ midi, hertz, pitch });
+  }
+
+  function handlePitchUpdate(e) {
+    let {midi, hertz, pitch} = toneData;
+    pitch = e.target.value;
+    try {
+      midi = tet.pitchToMidi(pitch);
+      hertz = tet.pitchToHertz(pitch);
+    } catch (err) {
+      console.log(err);
+      isPitchValidUpdater(false);
+      toneDataUpdater({ midi, hertz, pitch });
+      return;
+    }
+    setAllValid()
+    toneDataUpdater({ midi, hertz, pitch });
+  }
+
+  return(
+    <Container className={classes.toneInputContainer}>
+      <Card className={classes.card}>
+        <CardContent className={classes.cardContent}>
+          <Typography variant="h6" className={classes.cardTitle}>MIDI</Typography>
+          <TextField label='Input MIDI' variant='outlined'
+            className={classes.textField}
+            value={Number.isNaN(toneData.midi) ? '' : toneData.midi}
+            onChange={handleMidiUpdate}/>
+          <Typography variant='caption' color='error'
+            style={{visibility: isMidiValid ? 'hidden' : 'visible'}}>
+            Error processing MIDI data.
           </Typography>
-      </CardContent>
-    </Card>
-  );
+        </CardContent>
+      </Card>
+
+      <Card className={classes.card}>
+        <CardContent className={classes.cardContent}>
+          <Typography variant="h6" className={classes.cardTitle}>Hertz</Typography>
+          <TextField label='Input hertz' variant='outlined'
+            className={classes.textField}
+            value={Number.isNaN(toneData.hertz) ? '' : toneData.hertz}
+            onChange={handleHertzUpdate}/>
+          <Typography variant='caption' color='error'
+            style={{visibility: isHertzValid ? 'hidden' : 'visible'}}>
+            Error processing hertz data.
+          </Typography>
+        </CardContent>
+      </Card>
+
+      <Card className={classes.card}>
+        <CardContent className={classes.cardContent}>
+          <Typography variant="h6" className={classes.cardTitle}>Pitch</Typography>
+          <TextField label='Input pitch' variant='outlined'
+            className={classes.textField}
+            value={toneData.pitch}
+            onChange={handlePitchUpdate}/>
+          <Typography variant='caption' color='error'
+            style={{visibility: isPitchValid ? 'hidden' : 'visible'}}>
+            Error processing pitch data.
+          </Typography>
+        </CardContent>
+      </Card>
+    </Container>
+  )
 }
 
 export default App;
