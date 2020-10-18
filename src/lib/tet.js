@@ -72,8 +72,9 @@ const checkHertz = hertz => {
 };
 
 const parsePitch = pitch => [pitch.match(/^[A-G]/)[0],
-                             pitch.match(/((##|#|ss|s|bb|b|ff|f){0,1})/)[0],
-                             pitch.match(/(00|[0-9])/)[0]];
+                            pitch.match(/((##|#|ss|s|bb|b|ff|f))/) ?
+                                pitch.match(/((##|#|ss|s|bb|b|ff|f))/)[0] : '',
+                            pitch.match(/(00|[0-9])/)[0]];
 
 function midiToHertz(midi) {
     checkMidi(midi);
@@ -96,18 +97,20 @@ function hertzToMidi(hertz) {
     return ret;
 }
 
-const pitchToMidi = pitch => {
+function pitchToMidi (pitch) {
     checkPitch(pitch);
     let [letter, acci, oct] = parsePitch(pitch);
-    if (acci === undefined)
-        acci = '';
-    let ret = keyToMidi[letter] + accidentalsToAddition[acci] + octaveNumberToMidi[oct];
+    let ret = keyToMidi[letter] + accidentalsToAddition[acci] + octaveNumberToMidi(oct);
     checkMidi(ret);
     return ret;
 };
 
-const hertzToPitch = hertz => midiToPitch(hertzToMidi(hertz));
+function hertzToPitch (hertz) {
+    return midiToPitch(hertzToMidi(hertz));
+}
 
-const pitchToHertz = pitch => midiToHertz(pitchToMidi(pitch));
+function pitchToHertz (pitch) {
+    return midiToHertz(pitchToMidi(pitch));
+}
 
 export default { midiToHertz, midiToPitch, hertzToMidi, hertzToPitch, pitchToMidi, pitchToHertz, checkPitch, checkMidi, checkHertz };
