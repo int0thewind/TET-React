@@ -2,6 +2,8 @@
 
 This project allows you to convert MIDI number, frequency, and pitch, under the twelve tone equal temperment system.
 
+An online demo is deployed on firebase. [link](https://tet12-f20d7.firebaseapp.com)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
