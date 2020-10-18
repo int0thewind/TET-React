@@ -6,6 +6,7 @@ import { AppBar, Toolbar, Typography,
 } from '@material-ui/core'
 import tet from './lib/tet'
 
+const TONE_DATA_STORAGE = 'previousToneData';
 
 function App() {
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -57,11 +58,12 @@ function ToneInputs() {
   let classes = toneInputsStyle({
     direction: minWidth ? 'row': 'column'
   });
-  let [toneData, toneDataUpdater] = React.useState({
-    midi: 69,
-    hertz: 440.0,
-    pitch: 'A4'
-  });
+
+  let initialData = window.localStorage.getItem(TONE_DATA_STORAGE)
+  initialData = initialData === null ?
+    { midi: 69, hertz: 440.0, pitch: "A4" } : JSON.parse(initialData)
+
+  let [toneData, toneDataUpdater] = React.useState(initialData);
   let [isMidiValid,  isMidiValidUpdater ] = React.useState(true);
   let [isHertzValid, isHertzValidUpdater] = React.useState(true);
   let [isPitchValid, isPitchValidUpdater] = React.useState(true);
@@ -86,6 +88,7 @@ function ToneInputs() {
     }
     setAllValid()
     toneDataUpdater({ midi, hertz, pitch });
+    window.localStorage.setItem(TONE_DATA_STORAGE, JSON.stringify({ midi, hertz, pitch }));
   }
 
   function handleHertzUpdate(e) {
@@ -102,6 +105,7 @@ function ToneInputs() {
     }
     setAllValid()
     toneDataUpdater({ midi, hertz, pitch });
+    window.localStorage.setItem(TONE_DATA_STORAGE, JSON.stringify({ midi, hertz, pitch }));
   }
 
   function handlePitchUpdate(e) {
@@ -118,6 +122,7 @@ function ToneInputs() {
     }
     setAllValid()
     toneDataUpdater({ midi, hertz, pitch });
+    window.localStorage.setItem(TONE_DATA_STORAGE, JSON.stringify({ midi, hertz, pitch }));
   }
 
   return(
