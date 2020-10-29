@@ -1,11 +1,11 @@
-// TODO: waiting for App.js testing
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import App from './App';
 
-// import React from 'react';
-// import { render } from '@testing-library/react';
-// import App from './App';
-
-// test('renders learn react link', () => {
-//   const { getByText } = render(<App />);
-//   const linkElement = getByText(/learn react/i);
-//   expect(linkElement).toBeInTheDocument();
-// });
+test('renders essential webpage element', () => {
+    render(<App />);
+    expect(screen.getByText('TET')).toBeInTheDocument();
+    expect(screen.getByText('MIDI')).toBeInTheDocument();
+    expect(screen.getByText('Hertz')).toBeInTheDocument();
+    expect(screen.getByText('Pitch')).toBeInTheDocument();
+});
