@@ -1,6 +1,5 @@
 import React from 'react';
-import { Typography, Card, CardContent, TextField,
-  makeStyles, useMediaQuery, Container } from '@material-ui/core'
+import { Typography, Card, CardContent, TextField, makeStyles, useMediaQuery } from '@material-ui/core'
 import tet from './lib/tet'
 
 const TONE_DATA_STORAGE = 'previousToneData';
@@ -38,9 +37,9 @@ function ToneInputs() {
     direction: minWidth ? 'row': 'column'
   });
 
-  let initialData = window.localStorage.getItem(TONE_DATA_STORAGE)
-  initialData = initialData === null ?
-    { midi: 69, hertz: 440.0, pitch: "A4" } : JSON.parse(initialData)
+  let initialData = JSON.parse(window.localStorage.getItem(TONE_DATA_STORAGE));
+  if (initialData === null)
+    initialData = {midi: 69, hertz: 440.0, pitch: 'A4'};
 
   let [toneData, toneDataUpdater] = React.useState(initialData);
   let [isMidiValid,  isMidiValidUpdater ] = React.useState(true);
@@ -111,7 +110,7 @@ function ToneInputs() {
             onChange={handleMidiUpdate}/>
           <Typography variant='caption' color='error'
             style={{visibility: isMidiValid ? 'hidden' : 'visible'}}>
-            Error processing MIDI data.
+            Invalid MIDI number
           </Typography>
         </CardContent>
       </Card>
@@ -125,7 +124,7 @@ function ToneInputs() {
             onChange={handleHertzUpdate}/>
           <Typography variant='caption' color='error'
             style={{visibility: isHertzValid ? 'hidden' : 'visible'}}>
-            Error processing hertz data.
+            Invalid hertz
           </Typography>
         </CardContent>
       </Card>
@@ -139,7 +138,7 @@ function ToneInputs() {
             onChange={handlePitchUpdate}/>
           <Typography variant='caption' color='error'
             style={{visibility: isPitchValid ? 'hidden' : 'visible'}}>
-            Error processing pitch data.
+            Invalid Pitch
           </Typography>
         </CardContent>
       </Card>
