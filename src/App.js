@@ -3,6 +3,8 @@ import { AppBar, Toolbar, Typography, useMediaQuery,
   ThemeProvider, createMuiTheme } from '@material-ui/core'
 import ToneInputs from './ToneInputs'
 
+const PROJECT_NAME = '12TET Tone Converter';
+
 function App() {
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const autoTheme = createMuiTheme({
@@ -14,7 +16,7 @@ function App() {
     <ThemeProvider theme={autoTheme}>
       <AppBar position="sticky">
         <Toolbar>
-          <Typography variant="h6">TET</Typography>
+          <Typography variant="h6">{PROJECT_NAME}</Typography>
         </Toolbar>
       </AppBar>
       <ToneInputs/>
