@@ -57,7 +57,7 @@ const octaveNumberToMidi = num => {
 
 const checkPitch = pitch => {
     if (!(typeof pitch === 'string' &&
-        pitch.match(/^[A-G]((##|#|ss|s|bb|b|ff|f){0,1})(00|[0-9])$/gm)[0] === pitch))
+        pitch.match(/^[A-G]((##|#|ss|s|bb|b|ff|f)?)(00|[0-9])$/gm)[0] === pitch))
         throw Error(`Your input pitch ${pitch} is not a valid pitch`)
 };
 
@@ -103,7 +103,7 @@ function pitchToMidi (pitch) {
     let ret = keyToMidi[letter] + accidentalsToAddition[acci] + octaveNumberToMidi(oct);
     checkMidi(ret);
     return ret;
-};
+}
 
 function hertzToPitch (hertz) {
     return midiToPitch(hertzToMidi(hertz));

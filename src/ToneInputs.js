@@ -138,7 +138,7 @@ function ToneInputs() {
             onChange={handlePitchUpdate}/>
           <Typography variant='caption' color='error'
             style={{visibility: isPitchValid ? 'hidden' : 'visible'}}>
-            Invalid Pitch
+            Invalid pitch
           </Typography>
         </CardContent>
       </Card>
