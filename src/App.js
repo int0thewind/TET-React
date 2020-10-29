@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, useMediaQuery,
   ThemeProvider, createMuiTheme } from '@material-ui/core'
 import ToneInputs from './ToneInputs'
 
-const PROJECT_NAME = '12TET Tone Converter';
+export const PROJECT_NAME = '12TET Tone Converter';
 
 function App() {
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
