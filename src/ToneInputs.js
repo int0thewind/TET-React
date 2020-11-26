@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Card, CardContent, TextField, makeStyles, useMediaQuery } from '@material-ui/core'
-import tet from './lib/tet'
+import tet from './lib/tet/tet'
 
 const TONE_DATA_STORAGE = 'previousToneData';
 

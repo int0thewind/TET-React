@@ -1,0 +1,3 @@
+[submodule "src/lib/tet"]
+	path = src/lib/tet
+	url = https://github.com/int0thewind/12TET.git
