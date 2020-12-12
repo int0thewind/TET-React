@@ -1,19 +1,24 @@
 import React from 'react';
 import {
-  Typography, Card, CardContent, TextField, makeStyles, useMediaQuery,
+  Typography,
+  Card,
+  CardContent,
+  TextField,
+  makeStyles,
+  useMediaQuery,
 } from '@material-ui/core';
 import tet from './lib/tet/tet';
 
 const TONE_DATA_STORAGE = 'previousToneData';
 
-const toneInputsStyle = makeStyles((theme) => ({
+const toneInputsStyle = makeStyles(theme => ({
   toneInputContainer: {
     display: 'flex',
     height: '100%',
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: (props) => props.direction,
+    flexDirection: props => props.direction,
     backgroundColor: theme.palette.background.default,
   },
   card: {
@@ -40,7 +45,7 @@ function ToneInputs() {
   });
 
   let initialData = JSON.parse(window.localStorage.getItem(TONE_DATA_STORAGE));
-  if (initialData === null) initialData = { midi: 69, hertz: 440.0, pitch: 'A4' };
+  if (initialData === null) initialData = {midi: 69, hertz: 440.0, pitch: 'A4'};
 
   const [toneData, toneDataUpdater] = React.useState(initialData);
   const [isMidiValid, isMidiValidUpdater] = React.useState(true);
@@ -56,52 +61,54 @@ function ToneInputs() {
   }
 
   function handleMidiUpdate(e) {
-    let { midi, hertz, pitch } = toneData;
+    let {midi, hertz, pitch} = toneData;
     midi = parseInt(e.target.value, 10);
     try {
       pitch = tet.midiToPitch(midi);
       hertz = tet.midiToHertz(midi);
     } catch (err) {
       isMidiValidUpdater(false);
-      toneDataUpdater({ midi, hertz, pitch });
+      toneDataUpdater({midi, hertz, pitch});
       return;
     }
-    updateAllInfo({ midi, hertz, pitch });
+    updateAllInfo({midi, hertz, pitch});
   }
 
   function handleHertzUpdate(e) {
-    let { midi, hertz, pitch } = toneData;
+    let {midi, hertz, pitch} = toneData;
     hertz = parseFloat(e.target.value);
     try {
       pitch = tet.hertzToPitch(hertz);
       midi = tet.hertzToMidi(hertz);
     } catch (err) {
       isHertzValidUpdater(false);
-      toneDataUpdater({ midi, hertz, pitch });
+      toneDataUpdater({midi, hertz, pitch});
       return;
     }
-    updateAllInfo({ midi, hertz, pitch });
+    updateAllInfo({midi, hertz, pitch});
   }
 
   function handlePitchUpdate(e) {
-    let { midi, hertz, pitch } = toneData;
+    let {midi, hertz, pitch} = toneData;
     pitch = e.target.value;
     try {
       midi = tet.pitchToMidi(pitch);
       hertz = tet.pitchToHertz(pitch);
     } catch (err) {
       isPitchValidUpdater(false);
-      toneDataUpdater({ midi, hertz, pitch });
+      toneDataUpdater({midi, hertz, pitch});
       return;
     }
-    updateAllInfo({ midi, hertz, pitch });
+    updateAllInfo({midi, hertz, pitch});
   }
 
   return (
     <div className={classes.toneInputContainer}>
       <Card className={classes.card}>
         <CardContent className={classes.cardContent}>
-          <Typography variant="h6" className={classes.cardTitle}>MIDI</Typography>
+          <Typography variant="h6" className={classes.cardTitle}>
+            MIDI
+          </Typography>
           <TextField
             label="Input MIDI"
             variant="outlined"
@@ -112,7 +119,7 @@ function ToneInputs() {
           <Typography
             variant="caption"
             color="error"
-            style={{ visibility: isMidiValid ? 'hidden' : 'visible' }}
+            style={{visibility: isMidiValid ? 'hidden' : 'visible'}}
           >
             Invalid MIDI number
           </Typography>
@@ -121,7 +128,9 @@ function ToneInputs() {
 
       <Card className={classes.card}>
         <CardContent className={classes.cardContent}>
-          <Typography variant="h6" className={classes.cardTitle}>Hertz</Typography>
+          <Typography variant="h6" className={classes.cardTitle}>
+            Hertz
+          </Typography>
           <TextField
             label="Input hertz"
             variant="outlined"
@@ -132,7 +141,7 @@ function ToneInputs() {
           <Typography
             variant="caption"
             color="error"
-            style={{ visibility: isHertzValid ? 'hidden' : 'visible' }}
+            style={{visibility: isHertzValid ? 'hidden' : 'visible'}}
           >
             Invalid hertz
           </Typography>
@@ -141,7 +150,9 @@ function ToneInputs() {
 
       <Card className={classes.card}>
         <CardContent className={classes.cardContent}>
-          <Typography variant="h6" className={classes.cardTitle}>Pitch</Typography>
+          <Typography variant="h6" className={classes.cardTitle}>
+            Pitch
+          </Typography>
           <TextField
             label="Input pitch"
             variant="outlined"
@@ -152,7 +163,7 @@ function ToneInputs() {
           <Typography
             variant="caption"
             color="error"
-            style={{ visibility: isPitchValid ? 'hidden' : 'visible' }}
+            style={{visibility: isPitchValid ? 'hidden' : 'visible'}}
           >
             Invalid pitch
           </Typography>

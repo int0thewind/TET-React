@@ -1,7 +1,11 @@
 import React from 'react';
 import {
-  AppBar, Toolbar, Typography, useMediaQuery,
-  ThemeProvider, createMuiTheme,
+  AppBar,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  ThemeProvider,
+  createMuiTheme,
 } from '@material-ui/core';
 import ToneInputs from './ToneInputs';
 
