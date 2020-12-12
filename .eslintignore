@@ -1,0 +1,6 @@
+/node_modules
+/public
+/.github
+/src/lib
+*.test.js
+*.test.jsx
